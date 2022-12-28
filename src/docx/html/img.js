@@ -1,11 +1,11 @@
-import Graphic from './graphic'	
+import Graphic from './graphic'
 
-export default class Image extends Graphic{
-	get tag(){return 'img'}
-	
-	convertStyle(el){
+export default class Image extends Graphic {
+	get tag() { return 'img' }
+
+	convertStyle(el) {
 		super.convertStyle(...arguments)
-		var blob=this.wordModel.getImage();
-		blob && (el.src=this.doc.asImageURL(blob));
+		var blob = this.wordModel.getImage();
+		blob && (el.src = this.doc.asImageURL(blob));
 	}
 }

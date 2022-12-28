@@ -8,3 +8,6 @@ parser
 spec/images
 
 dist/index.js
+
+package-lock.json
+yarn.lock

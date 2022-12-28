@@ -10,25 +10,25 @@ import converters from "./docx/html/factory"
  * }
  * @returns 
  */
-export default function docx2html(file, opt){
+export default function docx2html(file, opt) {
 	return docx4js.load(file)
-		.then(docx=>{
-			const html=docx.parse(docx4js.createVisitorFactory(converters,opt))
+		.then(docx => {
+			const html = docx.parse(docx4js.createVisitorFactory(converters, opt))
 			return Object.create({
-				content: html.content, 
-				toString(){
+				content: html.content,
+				toString() {
 					return html.toString(...arguments)
 				},
-				asZip(){
+				asZip() {
 					return html.asZip(...arguments)
 				},
-				download(){
+				download() {
 					return html.download(...arguments)
 				},
-				save(){
+				save() {
 					return html.save(...arguments)
 				},
-				release(){
+				release() {
 					html.release()
 				}
 			})

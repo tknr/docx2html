@@ -1,38 +1,38 @@
-var newDocx=require("docx4js/spec/newDocx")
-var docx2html=require("../lib")
+var newDocx = require("docx4js/spec/newDocx")
+var docx2html = require("../lib")
 
-describe("docx2html",()=>{
-	describe("basic model converting", ()=>{
-		it("document, and section", (done)=>{
+describe("docx2html", () => {
+	describe("basic model converting", () => {
+		it("document, and section", (done) => {
 			docx2html(newDocx())
-			.then(html=>{
-				expect(!!html.content).toBe(true)
-				expect(html.content.querySelectorAll('section').length).toBe(1)
-				done()
-			}).catch(e=>{fail(e);done()})
+				.then(html => {
+					expect(!!html.content).toBe(true)
+					expect(html.content.querySelectorAll('section').length).toBe(1)
+					done()
+				}).catch(e => { fail(e); done() })
 		})
 
-		it("paragraph,span,text", done=>{
-			docx2html(newDocx()).then(html=>{
+		it("paragraph,span,text", done => {
+			docx2html(newDocx()).then(html => {
 				expect(html.content.querySelectorAll('p,span').length).toBe(2)
 				done()
-			}).catch(e=>{fail(e);done()})
+			}).catch(e => { fail(e); done() })
 		})
 
-		describe("table",()=>{
-			it("1 cell", done=>{
-				docx2html(newDocx("<w:tbl><w:tr><w:tc><w:p><w:r><w:t>hello</w:t></w:r></w:p></w:tc></w:tr></w:tbl>")).catch(e=>{fail(e);done()})
-				.then(html=>{
-					expect(html.content.querySelector('table').textContent).toMatch(/hello/)
-					expect(html.content.querySelector('tr').textContent).toMatch(/hello/)
-					expect(html.content.querySelector('td').textContent).toMatch(/hello/)
-					expect(html.content.querySelector('p').textContent).toMatch(/hello/)
-					expect(html.content.querySelector('span').textContent).toMatch(/hello/)
-					done()
-				})
+		describe("table", () => {
+			it("1 cell", done => {
+				docx2html(newDocx("<w:tbl><w:tr><w:tc><w:p><w:r><w:t>hello</w:t></w:r></w:p></w:tc></w:tr></w:tbl>")).catch(e => { fail(e); done() })
+					.then(html => {
+						expect(html.content.querySelector('table').textContent).toMatch(/hello/)
+						expect(html.content.querySelector('tr').textContent).toMatch(/hello/)
+						expect(html.content.querySelector('td').textContent).toMatch(/hello/)
+						expect(html.content.querySelector('p').textContent).toMatch(/hello/)
+						expect(html.content.querySelector('span').textContent).toMatch(/hello/)
+						done()
+					})
 			})
 
-			it("4 cell 2 row", done=>{
+			it("4 cell 2 row", done => {
 				docx2html(newDocx(`<w:tbl>
 					<w:tr>
 						<w:tc>
@@ -50,16 +50,16 @@ describe("docx2html",()=>{
 							<w:p><w:r><w:t>hello</w:t></w:r></w:p>
 						</w:tc>
 					</w:tr>
-					</w:tbl>`)).catch(e=>{fail(e);done()})
-				.then(html=>{
-					expect(html.content.querySelectorAll('tr').length).toBe(2)
-					expect(html.content.querySelectorAll('td').length).toBe(4)
-					done()
-				})
+					</w:tbl>`)).catch(e => { fail(e); done() })
+					.then(html => {
+						expect(html.content.querySelectorAll('tr').length).toBe(2)
+						expect(html.content.querySelectorAll('td').length).toBe(4)
+						done()
+					})
 			})
 		})
 
-		it("hyperlink", done=>{
+		it("hyperlink", done => {
 			docx2html(newDocx(`
 			<w:p>
 				<w:hyperlink r:id="rId8" w:history="1">
@@ -70,13 +70,13 @@ describe("docx2html",()=>{
 		            <w:t>lazy dog.</w:t>
 		          </w:r>
 		        </w:hyperlink>
-			</w:p>`)).then(html=>{
+			</w:p>`)).then(html => {
 				expect(!!html.content.querySelector('a')).toBe(true)
 				done()
-			}).catch(e=>{fail(e);done()})
+			}).catch(e => { fail(e); done() })
 		})
-		
-		it("heading", done=>{
+
+		it("heading", done => {
 			docx2html(newDocx(`
 				<w:p>
 				  <w:pPr>
@@ -85,16 +85,17 @@ describe("docx2html",()=>{
 				  <w:r>
 					<w:t>The quick </w:t>
 				  </w:r>
-				</w:p>`)).then(html=>{
-					expect(!!html.content.querySelector("h1")).toBe(true)
-					done()
-				}).catch(e=>{fail(e);done()})
+				</w:p>`)).then(html => {
+				expect(!!html.content.querySelector("h1")).toBe(true)
+				done()
+			}).catch(e => { fail(e); done() })
 		})
 
-		describe("list", ()=>{
-			var wNumbering=`<w:numbering xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 wp14">`
-			it("ul", done=>{
-				docx2html(newDocx({"word/document.xml":`
+		describe("list", () => {
+			var wNumbering = `<w:numbering xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 wp14">`
+			it("ul", done => {
+				docx2html(newDocx({
+					"word/document.xml": `
 				<w:p>
 					<w:pPr>
 						<w:numPr>
@@ -105,7 +106,7 @@ describe("docx2html",()=>{
 					<w:r>
 						<w:t>On the Insert tab, the galleries include items that are designed to coordin</w:t>
 					</w:r>
-				</w:p>`,"word/numbering.xml":`${wNumbering}
+				</w:p>`, "word/numbering.xml": `${wNumbering}
 				<w:abstractNum w:abstractNumId="0">
 					<w:nsid w:val="7F5A70D8"/>
 					<w:multiLevelType w:val="hybridMultilevel"/>
@@ -124,16 +125,16 @@ describe("docx2html",()=>{
 					<w:abstractNumId w:val="0"/>
 				</w:num></w:numbering>
 				`}))
-				.then(html=>{
-					expect(!!html.content.querySelector('ul')).toBe(true)
-					expect(!!html.content.querySelector('li')).toBe(true)
-					done()
-				})
+					.then(html => {
+						expect(!!html.content.querySelector('ul')).toBe(true)
+						expect(!!html.content.querySelector('li')).toBe(true)
+						done()
+					})
 			})
 		})
 
-		describe("shapes", function(){
-			it("image", done=>{
+		describe("shapes", function () {
+			it("image", done => {
 				docx2html(newDocx(`
 				<w:p>
 					<w:r>
@@ -184,15 +185,15 @@ describe("docx2html",()=>{
 					</w:r>
 				</w:p>	
 				`))
-				.then(html=>{
-					expect(!!html.content.querySelector('img')).toBe(true)
-					done()
-				}).catch(e=>{fail(e);done()})
+					.then(html => {
+						expect(!!html.content.querySelector('img')).toBe(true)
+						done()
+					}).catch(e => { fail(e); done() })
 			})
 
-			it("shape:line,rect", done=>{
-				var Shape=require("../lib/docx/html/shape")
-				spyOn(Shape.Properties.prototype,"path").and.callThrough()
+			it("shape:line,rect", done => {
+				var Shape = require("../lib/docx/html/shape")
+				spyOn(Shape.Properties.prototype, "path").and.callThrough()
 				docx2html(newDocx(`
 				<w:p w:rsidR="00990182" w:rsidRDefault="00B57533">
 					<w:r>
@@ -242,13 +243,13 @@ describe("docx2html",()=>{
 						</mc:AlternateContent>
 					</w:r>
 				</w:p>`))
-				.then(html=>{
-					expect(Shape.Properties.prototype.path).toHaveBeenCalledWith({shape:"line"})
-					done()
-				}).catch(e=>{fail(e);done()})
+					.then(html => {
+						expect(Shape.Properties.prototype.path).toHaveBeenCalledWith({ shape: "line" })
+						done()
+					}).catch(e => { fail(e); done() })
 			})
 
-			describe("group", function(){
+			describe("group", function () {
 
 			})
 		})

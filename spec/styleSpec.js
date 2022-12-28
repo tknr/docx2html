@@ -1,32 +1,32 @@
-const newDocx=require("docx4js/spec/newDocx")
-const docx2html=require("../lib")
+const newDocx = require("docx4js/spec/newDocx")
+const docx2html = require("../lib")
 
 
-function failx(done){
-	return e=>{fail(e);done()}
+function failx(done) {
+	return e => { fail(e); done() }
 }
 
-describe("docx2html style", ()=>{
-	let wA="<w:p><w:r><w:t>hello</w:t></w:r></w:p>"
+describe("docx2html style", () => {
+	let wA = "<w:p><w:r><w:t>hello</w:t></w:r></w:p>"
 
-	describe("section", ()=>{//ever hacked for jsdom-nogyp, but removed the code for latest jsdom
-		let TargetStyle=require("../lib/docx/html/style/section")
+	describe("section", () => {//ever hacked for jsdom-nogyp, but removed the code for latest jsdom
+		let TargetStyle = require("../lib/docx/html/style/section")
 
-		it("width, height, margin", done=>{
+		it("width, height, margin", done => {
 			spyOn(TargetStyle.prototype, "size").and.callThrough()
 			spyOn(TargetStyle.prototype, "margin").and.callThrough()
-			docx2html(newDocx()).catch(e=>{fail(e);done()})
-			.then(html=>{
-				expect(TargetStyle.prototype.size).toHaveBeenCalled()
-				expect(TargetStyle.prototype.margin).toHaveBeenCalled()
-				var style=html.content.querySelector('section').style
-				expect(style.width).toBe("816px")
-				expect(style.minHeight).toBe("1056px")
-				done()
-			})
+			docx2html(newDocx()).catch(e => { fail(e); done() })
+				.then(html => {
+					expect(TargetStyle.prototype.size).toHaveBeenCalled()
+					expect(TargetStyle.prototype.margin).toHaveBeenCalled()
+					var style = html.content.querySelector('section').style
+					expect(style.width).toBe("816px")
+					expect(style.minHeight).toBe("1056px")
+					done()
+				})
 		})
 
-		it("columns",done=>{
+		it("columns", done => {
 			spyOn(TargetStyle.prototype, "cols").and.callThrough()
 			docx2html(newDocx(`${wA}
 				<w:p>
@@ -39,62 +39,64 @@ describe("docx2html style", ()=>{
 						</w:sectPr>
 					</w:pPr>
 				</w:p>${wA}`))
-			.then(html=>{
-				expect(TargetStyle.prototype.cols).toHaveBeenCalled()
-				let style=html.content.querySelector('section').style
-				expect(style['column-count']).toBe(2)
-				done()
-			}).catch(e=>{fail(e);done()})
+				.then(html => {
+					expect(TargetStyle.prototype.cols).toHaveBeenCalled()
+					let style = html.content.querySelector('section').style
+					expect(style['column-count']).toBe(2)
+					done()
+				}).catch(e => { fail(e); done() })
 		})
 	})
 
 
-	describe("structure", ()=>{
-		describe("defalt", ()=>{
-			it("document", done=>{
-				let TargetStyle=require("../lib/docx/html/style/document")
-				spyOn(TargetStyle.prototype,"convert").and.callThrough()
+	describe("structure", () => {
+		describe("defalt", () => {
+			it("document", done => {
+				let TargetStyle = require("../lib/docx/html/style/document")
+				spyOn(TargetStyle.prototype, "convert").and.callThrough()
 
 				docx2html(newDocx())
-				.then(html=>{
-					expect(TargetStyle.prototype.convert).toHaveBeenCalled()
-					done()
-				}).catch(failx(done))
+					.then(html => {
+						expect(TargetStyle.prototype.convert).toHaveBeenCalled()
+						done()
+					}).catch(failx(done))
 			})
 
-			it("paragraph", done=>{
-				let TargetStyle=require("../lib/docx/html/style/paragraph")
-				spyOn(TargetStyle.prototype,"convert").and.callThrough()
+			it("paragraph", done => {
+				let TargetStyle = require("../lib/docx/html/style/paragraph")
+				spyOn(TargetStyle.prototype, "convert").and.callThrough()
 
 				docx2html(newDocx())
-				.then(html=>{
-					expect(TargetStyle.prototype.convert).toHaveBeenCalled()
-					done()
-				}).catch(failx(done))
+					.then(html => {
+						expect(TargetStyle.prototype.convert).toHaveBeenCalled()
+						done()
+					}).catch(failx(done))
 			})
 
-			it("character", done=>{
-				let TargetStyle=require("../lib/docx/html/style/inline")
-				spyOn(TargetStyle.prototype,"convert").and.callThrough()
+			it("character", done => {
+				let TargetStyle = require("../lib/docx/html/style/inline")
+				spyOn(TargetStyle.prototype, "convert").and.callThrough()
 
-				docx2html(newDocx({"word/styles.xml":`
+				docx2html(newDocx({
+					"word/styles.xml": `
 					<w:style w:type="character" w:default="1" w:styleId="DefaultParagraphFont">
 						<w:name w:val="Default Paragraph Font"/>
 						<w:uiPriority w:val="1"/>
 						<w:semiHidden/>
 						<w:unhideWhenUsed/>
 					</w:style>`}))
-				.then(html=>{
-					expect(TargetStyle.prototype.convert).toHaveBeenCalled()
-					done()
-				}).catch(failx(done))
+					.then(html => {
+						expect(TargetStyle.prototype.convert).toHaveBeenCalled()
+						done()
+					}).catch(failx(done))
 			})
 
-			it("table", done=>{
-				let TargetStyle=require("../lib/docx/html/style/table")
-				spyOn(TargetStyle.prototype,"convert").and.callThrough()
+			it("table", done => {
+				let TargetStyle = require("../lib/docx/html/style/table")
+				spyOn(TargetStyle.prototype, "convert").and.callThrough()
 
-				docx2html(newDocx({"word/styles.xml":`
+				docx2html(newDocx({
+					"word/styles.xml": `
 						<w:style w:type="table" w:default="1" w:styleId="TableNormal">
 							<w:name w:val="Normal Table"/>
 							<w:uiPriority w:val="99"/>
@@ -110,47 +112,47 @@ describe("docx2html style", ()=>{
 								</w:tblCellMar>
 							</w:tblPr>
 						</w:style>`}))
-				.then(html=>{
-					expect(TargetStyle.prototype.convert).toHaveBeenCalled()
-					done()
-				}).catch(failx(done))
+					.then(html => {
+						expect(TargetStyle.prototype.convert).toHaveBeenCalled()
+						done()
+					}).catch(failx(done))
 			})
 		})
 
 
-		describe("direct style",()=>{
-			it("paragraph", done=>{
-				let TargetStyle=require("../lib/docx/html/style/paragraph").Properties
-				spyOn(TargetStyle.prototype,"convert").and.callThrough()
-				spyOn(TargetStyle.prototype,"jc").and.callThrough()
+		describe("direct style", () => {
+			it("paragraph", done => {
+				let TargetStyle = require("../lib/docx/html/style/paragraph").Properties
+				spyOn(TargetStyle.prototype, "convert").and.callThrough()
+				spyOn(TargetStyle.prototype, "jc").and.callThrough()
 				docx2html(newDocx(`
 					<w:p>
 						<w:pPr>
 							<w:jc w:val="center"/>
 						</w:pPr><w:r><w:t>hello</w:t></w:r></w:p>`))
-				.then(html=>{
-					expect(TargetStyle.prototype.convert).toHaveBeenCalled()
-					expect(TargetStyle.prototype.jc).toHaveBeenCalled()
-					done()
-				}).catch(failx(done))
+					.then(html => {
+						expect(TargetStyle.prototype.convert).toHaveBeenCalled()
+						expect(TargetStyle.prototype.jc).toHaveBeenCalled()
+						done()
+					}).catch(failx(done))
 			})
 
-			it("character", done=>{
-				let TargetStyle=require("../lib/docx/html/style/inline").Properties
-				spyOn(TargetStyle.prototype,"convert").and.callThrough()
-				spyOn(TargetStyle.prototype,"b").and.callThrough()
+			it("character", done => {
+				let TargetStyle = require("../lib/docx/html/style/inline").Properties
+				spyOn(TargetStyle.prototype, "convert").and.callThrough()
+				spyOn(TargetStyle.prototype, "b").and.callThrough()
 				docx2html(newDocx(`<w:p><w:r><w:rPr><w:b/></w:rPr><w:t>hello</w:t></w:r></w:p>`))
-				.then(html=>{
-					expect(TargetStyle.prototype.convert).toHaveBeenCalled()
-					expect(TargetStyle.prototype.b).toHaveBeenCalled()
-					done()
-				}).catch(failx(done))
+					.then(html => {
+						expect(TargetStyle.prototype.convert).toHaveBeenCalled()
+						expect(TargetStyle.prototype.b).toHaveBeenCalled()
+						done()
+					}).catch(failx(done))
 			})
 
-			it("table", done=>{
-				let TargetStyle=require("../lib/docx/html/style/table").Properties
-				spyOn(TargetStyle.prototype,"convert").and.callThrough()
-				spyOn(TargetStyle.prototype,"tblW").and.callThrough()
+			it("table", done => {
+				let TargetStyle = require("../lib/docx/html/style/table").Properties
+				spyOn(TargetStyle.prototype, "convert").and.callThrough()
+				spyOn(TargetStyle.prototype, "tblW").and.callThrough()
 				docx2html(newDocx(`
 					<w:tbl>
 						<w:tblPr>
@@ -187,11 +189,11 @@ describe("docx2html style", ()=>{
 							</w:tc>
 						</w:tr>
 					</w:tbl>`))
-				.then(html=>{
-					expect(TargetStyle.prototype.convert).toHaveBeenCalled()
-					expect(TargetStyle.prototype.tblW).toHaveBeenCalled()
-					done()
-				}).catch(failx(done))
+					.then(html => {
+						expect(TargetStyle.prototype.convert).toHaveBeenCalled()
+						expect(TargetStyle.prototype.tblW).toHaveBeenCalled()
+						done()
+					}).catch(failx(done))
 			})
 		})
 	})
